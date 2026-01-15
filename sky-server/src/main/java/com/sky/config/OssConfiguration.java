@@ -15,7 +15,10 @@ public class OssConfiguration {
     // 则不需要spring容器创建了
     @ConditionalOnMissingBean
     public AliOssUtil aliOssUtil(AliOssProperties aliOssProperties) {
-        log.info("开始初始化阿里云OSS配置...");
-        return new AliOssUtil(aliOssProperties.getEndpoint(), aliOssProperties.getAccessKeyId(), aliOssProperties.getAccessKeySecret(), aliOssProperties.getBucketName());
+        log.info("开始初始化阿里云OSS配置...,工具类对象为：{}",aliOssProperties);
+        return new AliOssUtil(aliOssProperties.getEndpoint(),
+                aliOssProperties.getAccessKeyId(),
+                aliOssProperties.getAccessKeySecret(),
+                aliOssProperties.getBucketName());
     }
 }
