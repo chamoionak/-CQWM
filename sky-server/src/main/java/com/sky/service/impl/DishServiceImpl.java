@@ -83,7 +83,7 @@ public class DishServiceImpl implements DishService {
     public void deleteBatch(List<Long> ids) {
         //根据当前菜品是否能删除？--是否存在启售中的菜品？
         for (Long id : ids) {
-            Dish dish=dishFlavorMapper.getById(id);
+            Dish dish=dishMapper.getById(id);
             //如果状态为启售
             if(dish.getStatus()== StatusConstant.ENABLE){
                 throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
@@ -101,4 +101,40 @@ public class DishServiceImpl implements DishService {
             dishFlavorMapper.deleteByDishId(id);
         }
     }
+
+    @Override
+    public DishVO getByIdWithFlavor(Long id) {
+        //根据菜品id查询菜品信息
+        Dish dish=dishMapper.getById(id);
+        //根据菜品id查询对应的口味信息
+        List<DishFlavor>flavors=dishFlavorMapper.getByDishId(id);
+        //封装菜品信息以及口味信息
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish, dishVO);
+        //设置口味信息
+        dishVO.setFlavors(flavors);
+        return dishVO;
+    }
+
+    @Override
+    public void updateWithFlavor(DishDTO dishDTO) {
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        //更新菜品信息
+        dishMapper.update(dish);
+        //删除原有口味
+        dishFlavorMapper.deleteByDishId(dishDTO.getId());
+        //插入新的口味
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        //判断口味列表是否为空，不为空则插入数据
+        if (flavors != null && flavors.size() > 0){
+            //为改口味设置对应的设置菜品id
+            flavors.forEach(dishFlavor -> {
+                dishFlavor.setDishId(dishDTO.getId());
+            });
+            dishFlavorMapper.insertBatch(flavors);
+        }
+    }
+
+
 }
