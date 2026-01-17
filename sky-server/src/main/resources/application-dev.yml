@@ -11,3 +11,6 @@ sky:
     access-key-id: LTAI5tH2QePfjhk1es8tk2fD
     access-key-secret: tDicVgI0zXeKoPJFRNc37RU4joD5sP
     bucket-name: chamoionak
+  redis:
+    host: localhost
+    port: 6379
